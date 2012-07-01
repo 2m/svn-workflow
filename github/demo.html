@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -6,7 +7,7 @@
         <script src="../raphael.js" type="text/javascript" charset="utf-8"></script>
         <script src="json2.js" type="text/javascript" charset="utf-8"></script>
         <script type="text/javascript">
-            var commits = chunk1.commits.concat(chunk2.commits, chunk3.commits),
+            var commits = chunk2.commits;
                 comms = {},
                 pixelsX = [],
                 pixelsY = [],
@@ -27,9 +28,9 @@
                 }
                 comms[commits[i].id] = commits[i];
             }
-            var colors = ["#000"];
+            var colors = [];
             for (var k = 0; k < mspace; k++) {
-                colors.push(Raphael.getColor());
+                colors.push(k in predefColors ? predefColors[k] : Raphael.getColor());
             }
             function fillPixels(obj, x1, y1, x2, y2) {
                 obj.bb = {
@@ -61,15 +62,14 @@
                             }
                         }
                     }
-                    (function (c, x, y) {
-                        top.push(fillPixels(r.circle(x, y, 10).attr({fill: "#000", opacity: 0, cursor: "pointer"})
-                        .hover(function () {
-                            var s = r.set(r.text(100, 100, c.author), r.text(100, 120, c.message)).attr({fill: "#fff"});
-                            this.popup = r.popupit(x, y + 5, s, 0);
-                            top.push(this.popup.insertBefore(this));
-                        }, function () {
-                            this.popup && this.popup.remove() && delete this.popup;
-                        }), x - 10, y - 10, x + 10, y + 10));
+                    (function (c, x, y) {                    
+                        top.push((function (obj) {
+                            if (!c.message)
+                                return;
+                            var s = r.set(r.text(100, 120, c.message)).attr({fill: "#fff"});
+                            obj.popup = r.popupit(x, y + 5, s, 0);
+                            top.push(obj.popup.insertBefore(obj));
+                        } (fillPixels(r.circle(x, y, 10).attr({fill: "#000", opacity: 0, cursor: "pointer"}))) ), x - 10, y - 10, x + 10, y + 10);
                     }(commits[i], x, y));
                 }
                 top.toFront();
@@ -125,8 +125,8 @@
                     bars.animate({opacity: 0}, 300);
                 };
                 holder.scrollLeft = cw;
-                holder.style.height = "480px";
-                holder.style.width = "640px";
+                holder.style.height = "452px";
+                holder.style.width = "800px";
                 setBars();
             };
             Raphael.fn.popupit = function (x, y, set, dir, size) {
@@ -189,13 +189,13 @@
                 background: #fff;
                 border: solid 1px #999;
                 cursor: move;
-                height: 480px;
+                height: 452px;
                 left: 50%;
                 margin: -240px 0 0 -320px;
                 overflow: hidden;
                 position: absolute;
                 top: 50%;
-                width: 640px;
+                width: 800px;
             }
         </style>
     </head>
